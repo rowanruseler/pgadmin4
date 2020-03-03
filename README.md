@@ -1,69 +1,90 @@
 ###### based on [dpage/pgadmin4]
 
-# Helm Chart for pgAdmin
+# pgAdmin
 
-#### Table of Contents
+[pgAdmin](https://www.pgadmin.org/) is the leading Open Source management tool for Postgres, the world’s most advanced Open Source database. pgAdmin is designed to meet the needs of both novice and experienced Postgres users alike, providing a powerful graphical interface that simplifies the creation, maintenance and use of database objects.
 
-1. [Overview][Overview]
-2. [Description][Description]
-3. [Setup][Setup]
+## TL;DR;
 
-## Overview
+```console
+$ helm install stable/pgadmin
+```
 
-## Notices
+## Introduction
 
-This helm chart requires, if ingress is enabled:
+This chart bootstraps a [pgAdmin](https://www.pgadmin.org/) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-* [cert-manager]
-  * configured with [letsencrypt]
+## Install the Chart
 
-## Description
+To install the chart with the release name `my-release`:
 
-pgAdmin is a web based administration tool for PostgreSQL database.
+```console
+$ helm install --name my-release stable/pgadmin
+```
 
-## Setup
+The command deploys pgAdmin on the Kubernetes cluster in the default configuration. The configuration section lists the parameters that can be configured durign installation.
 
-### Configuration
+> **Tip**: List all releases using `helm list`
+
+## Uninstall the Chart
+
+To uninstall/delete the `my-release` deployment:
+
+```console
+helm delete --purge my-release
+```
+
+The command removes nearly all the Kubernetes components associated with the chart and deletes the release.
+
+## Configuration
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `replicaCount` | Number of pgadmin replicas | `1` |
-| `image.tag` | Image tag | `latest` |
-| `ingress.enabled` | Enable Client Ingress | `true` |
-| `ingress.hosts` | Client Ingress Hostnames | `pgadmin.domain.com` |
-| `ingress.tls` | Client Ingress TLS configuration | `[]` |
-| `ingress.tls.secretName` | Client Ingress TLS Secretname | `pgadmin-tls` |
-| `ingress.tls.hosts` | Client Ingress TLS Hostnames | `pgadmin.domain.com` |
-| `environment.username` | pgAdmin default email | `pgadmin@domain.com` |
-| `environment.password` | pgAdmin default password | `SuperSecret` |
-| `persistence` | Persistent enabled/disabled | `true` |
-| `persistence.accessMode` | persistent Access Mode | `ReadWriteOnce` |
-| `persistence.size` | persistent volume size | `10Gi` |
-| `resources` | CPU/memory resource requests/limits | `` |
+| `image.repository` | Docker image | `dpage/pgadmin4` |
+| `image.tag` | Docker image tag | `4.18` |
+| `image.pullPolicy` | Docker image pull policy | `IfNotPresent` |
+| `service.type` | Service type (ClusterIP, NodePort or LoadBalancer) | `ClusterIP` |
+| `service.port` | Service port | `80` |
+| `strategy` | Specifies the strategy used to replace old Pods by new ones | `{}` |
+| `serverDefinitions.enabled` | Enables Server Definitions | `false` |
+| `serverDefinitions.servers` | Pre-configured server parameters | `` |
+| `ingress.enabled` | Enables Ingress | `false` |
+| `ingress.annotations` | Ingress annotations | `{}` |
+| `ingress.hosts` | Ingress accepted hostnames | `nil` |
+| `ingress.tls` | Ingress TLS configuration | `[]` |
+| `ingress.path` | Ingress path mapping | `` |
+| `env.email` | pgAdmin default email | `chart@example.local` |
+| `env.password` | pgAdmin default password | `SuperSecret` |
+| `persistentVolume.enabled` | If true, pgAdmin will create a Persistent Volume Claim | `true` |
+| `persistentVolume.accessMode` | Persistent Volume access Mode | `ReadWriteOnce` |
+| `persistentVolume.size` | Persistent Volume size | `10Gi` |
+| `persistentVolume.storageClass` | Persistent Volume Storage Class | `unset` |
+| `securityContext` | Custom [security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) for pgAdmin containers | `` |
+| `resources` | CPU/memory resource requests/limits | `{}` |
+| `livenessProbe` | [liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) initial delay and timeout | `` |
+| `readinessProbe` | [readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) initial delay and timeout | `` |
 | `nodeSelector` | Node labels for pod assignment | `{}` |
 | `tolerations` | Node tolerations for pod assignment | `[]` |
 | `affinity` | Node affinity for pod assignment | `{}` |
+| `env.email` | pgAdmin default email | `chart@example.local` |
+| `env.password` | pgAdmin default password | `SuperSecret` |
+| `env.enhanced_cookie_protection` | Allows pgAdmin4 to create session cookies based on IP address | `"False"` |
 
-### Install
+Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example:
 
-Install the pgAdmin helm chart with a release name:
-
-```
-helm install --name pgadmin .
-```
-
-### Remove
-
-Remove the pgAdmin helm chart:
-
-```
-helm delete --purge pgadmin
+```bash
+$ helm install stable/pgadmin --name my-release \
+  --set env.password=SuperSecret
 ```
 
-[Overview]: #overview
-[Description]: #description
-[Setup]: #setup
+Alternatively, a YAML file that specifies the values for the parameters can be
+provided while installing the chart. For example:
+
+```bash
+$ helm install stable/pgadmin --name my-release -f values.yaml
+```
+
+> **Tip**: You can use the default [values.yaml](values.yaml)
 
 [dpage/pgadmin4]: https://hub.docker.com/r/dpage/pgadmin4
-[cert-manager]: https://github.com/helm/charts/tree/master/stable/cert-manager
-[letsencrypt]: https://letsencrypt.org/
